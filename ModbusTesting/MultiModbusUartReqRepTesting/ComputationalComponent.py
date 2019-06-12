@@ -1,8 +1,8 @@
 '''
 This example shows setting up two Modbus connections utilizing a Modbus Device Manager.
 For this setup, the serial port configurations will be:
-    1)  Modbus1 = slaveaddress=10,port="UART2",baudrate=19200,bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,serialTimeout=0.05
-    2)  Modbus2 = slaveaddress=12,port="UART2",baudrate=19200,bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,serialTimeout=0.05
+    1)  Modbus1 = slaveaddress=10,port="UART2",baudrate=19200,bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,serialTimeout=1
+    2)  Modbus2 = slaveaddress=12,port="UART2",baudrate=19200,bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,serialTimeout=1
 
 Any of the provided parameters can be adjusted for each modbus device, they are separate modbus instances at the device level.
 Assume serial port setup parameters are valid (no error checking)
@@ -91,8 +91,8 @@ class ComputationalComponent(Component):
         self.breakerSlaveAddr = 12
         # PortConfig = portname, baudrate, bytesize, parity, stopbits, serial timeout
         #    using user defined portname, the ModbusUartDeviceMgr will translate to the value needed by pyserial (/dev/ttyOx)
-        self.sensorPortConfig = PortConfig('UART2', 115200, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE, 0.05)
-        self.breakerPortConfig = PortConfig('UART2', 115200, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE, 0.05)
+        self.sensorPortConfig = PortConfig('UART2', 115200, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE, 1.0)
+        self.breakerPortConfig = PortConfig('UART2', 115200, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE, 1.0)
 
         # Create Modbus configuration for specific Modbus Instances
         self.sensorModbusConfig = AppModbusConfig(self.sensorSlaveAddr,self.sensorPortConfig)
