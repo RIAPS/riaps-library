@@ -7,6 +7,7 @@ Created on July 27, 2017
 from riaps.run.comp import Component
 import os
 import threading
+import time
 # riaps:keep_import:end
 
 class ToggleGpioComponent(Component):
@@ -34,9 +35,12 @@ class ToggleGpioComponent(Component):
             else:
                 self.setValue = 0
             msg = ('write',self.setValue)
-            self.gpioReqPort.send_pyobj(msg)
-            self.logger.info("on_toggle()[%s]: Send write request, setValue=%d" %
-                            (str(self.pid), self.setValue))
+            try:
+                self.gpioReqPort.send_pyobj(msg)
+                self.logger.info("on_toggle()[%s]: Send write request, setValue=%d" %
+                                 (str(self.pid), self.setValue))
+            except:
+                self.logger.info("send exception")
 # riaps:keep_toggle:end
 
 # riaps:keep_readValue:begin
@@ -47,7 +51,10 @@ class ToggleGpioComponent(Component):
         if self.protectReq.acquire(blocking = False):
             self.logger.info("on_readValue()[%s]: %s" % (str(self.pid),repr(msg)))
             msg = ('read',0)
-            self.gpioReqPort.send_pyobj(msg)
+            try:
+                self.gpioReqPort.send_pyobj(msg)
+            except:
+                self.logger.info("send exception")
 # riaps:keep_readValue:end
 
 # riaps:keep_gpioReqPort:begin
@@ -62,6 +69,7 @@ class ToggleGpioComponent(Component):
     def handleActivate(self):
         self.uuid = self.getUUID()
         self.logger.info("My UUID is: %s" % self.uuid)
+        time.sleep(10)
 
     def handlePeerStateChange(self,state,uuid):
         self.logger.info("peer %s is %s" % (uuid,state))

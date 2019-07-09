@@ -16,8 +16,9 @@ import os
 import logging
 import threading
 import Adafruit_BBIO.GPIO as GPIO
-#import pydevd
+# import pydevd
 import zmq
+import time
 
 
 ''' Internal thread for GPIO hardware interaction '''
@@ -68,7 +69,6 @@ class GpioDeviceThread(threading.Thread):
         self.poller.register(self.plug, zmq.POLLIN)
         if self.terminated.is_set(): return
         self.enableGpio()  # setup the requested GPIO
-
         while True:
             self.active.wait(None)
             if self.terminated.is_set():
@@ -86,13 +86,23 @@ class GpioDeviceThread(threading.Thread):
                         GPIO.output(self.component.bbb_pin_name, message[1])
                         self.logger.info("GpioDeviceThread - value written to GPIO %s: %s" %
                                                     (self.component.bbb_pin_name, str(message[1])))
-                        self.plug.send_pyobj(('write',message[1]))
+#                         self.plug.send_pyobj(('write',message[1]))
+                        try:
+                            self.plug.send_pyobj("write %d" % message[1])
+                        except:
+                            self.logger.info("send exception")
 
                     elif 'read' in message:
                         val = GPIO.input(self.component.bbb_pin_name)
                         self.logger.info("GpioDeviceThread - value read from GPIO %s: %s" %
                                                     (self.component.bbb_pin_name, val))
-                        self.plug.send_pyobj(('read',val))
+                        try:
+#                             self.plug.send_pyobj(('read',val))
+                            self.plug.send_pyobj("read %d" % val)
+                            self.logger.info("sent")
+                        except:
+                            self.logger.info("send exception")
+                del socks
 
         self.logger.info("GpioDeviceThread ended")
 
@@ -105,8 +115,11 @@ class GpioDeviceThread(threading.Thread):
         self.component.logger.info("GpioDeviceThread setting up GPIO=%s: direction=%s resistor=%s trigger=%s ivalue=%d delay=%d [%d]" %
                                     (self.component.bbb_pin_name, self.component.direction, self.component.pull_up_down,
                                     self.component.trigger_edge, self.component.initial_value, self.component.setup_delay, self.pid))
-        GPIO.setup(self.component.bbb_pin_name, self.direction, self.pull_up_down,
-                    self.component.initial_value, self.component.setup_delay)
+        try:
+            GPIO.setup(self.component.bbb_pin_name, self.direction, self.pull_up_down,
+                       self.component.initial_value, self.component.setup_delay)
+        except:
+            self.logger.info("exception")
         self.gpioAvailable = True
         self.logger.info("GpioDeviceThread GPIO=%s setup and available for use" % self.component.bbb_pin_name)
 
@@ -143,7 +156,7 @@ class GpioDevice(Component):
 # riaps:keep_constr:begin
     def __init__(self,bbb_pin_name='P8_11',direction='OUT',pull_up_down='PUD_OFF',trigger_edge='RISING',initial_value=0,setup_delay=60):
         super().__init__()
-        #super(GpioDevice, self).__init__()
+#         super(GpioDevice, self).__init__()
         self.pid = os.getpid()
         self.logger.info("(PID %s) - starting GpioDevice" % str(self.pid))
         self.pid = os.getpid()
@@ -153,7 +166,7 @@ class GpioDevice(Component):
         self.trigger_edge = trigger_edge
         self.initial_value = initial_value
         self.setup_delay = setup_delay
-#        pydevd.settrace(host='192.168.1.102',port=5678)
+#         pydevd.settrace(host='192.168.1.100',port=5678)
         self.logger.info("@%s: %s %s %s ivalue=%d delay=%d [%d]" % (self.bbb_pin_name, self.direction, self.pull_up_down, self.trigger_edge, self.initial_value, self.setup_delay, self.pid))
         self.gpioDeviceThread = None                    # Cannot manipulate GPIOs in constructor or start threads
 # riaps:keep_constr:end
@@ -169,6 +182,9 @@ class GpioDevice(Component):
             self.gpioDeviceThread = GpioDeviceThread(self,self.trigger)
             self.gpioDeviceThread.start()
             self.gpioDeviceThread.activate()
+#             time.sleep(0.1)
+#             self.trigger.activate()
+            self.logger.info("trigger activated")
 
         self.clock.halt()
 # riaps:keep_clock:end
@@ -176,8 +192,11 @@ class GpioDevice(Component):
 # riaps:keep_trigger:begin
     ''' Internal thread response available, message sent back to requesting component using reply port '''
     def on_trigger(self):
-        msg = self.trigger.recv_pyobj()
-        self.logger.info("Received GpioDeviceThread response - %s" % msg)
+        try:
+            msg = self.trigger.recv_pyobj()
+            self.logger.info("Received GpioDeviceThread response - %s" % msg)
+        except:
+            self.logger.info("exception receiving message")
         self.gpioRepPort.send_pyobj(msg)
         self.logger.info("Sent response back from GPIO request")
 # riaps:keep_trigger:end
