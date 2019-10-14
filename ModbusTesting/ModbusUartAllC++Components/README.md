@@ -119,7 +119,7 @@ target_link_libraries(modbusuart PRIVATE czmq riaps dl capnp kj modbus)
       - White (RX) to BBB TX (pin 21),
       - Green (TX) to BBB RX (pin 22),
       - GND on BBB pins 1, 2, 45, 46
-    - Cable information from https://www.adafruit.com/product/954?gclid=EAIaIQobChMIlIWZzJvX1QIVlyOBCh3obgJjEAQYASABEgImJfD_BwE
+    - Cable information from https://www.adafruit.com/product/954
 
 * To turn on the UART2, on the beaglebone, modify /boot/uEnv.txt by uncommenting the following line and adding BB-UART2
 (which points to an overlay in /lib/firmware)
