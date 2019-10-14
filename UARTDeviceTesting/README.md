@@ -27,7 +27,7 @@ In this test, the TestUartActorA (using TestUartComponentA) will write an increm
     - White (RX) to BBB TX (pin 21),
     - Green (TX) to BBB RX (pin 22),
     - GND on BBB pins 1, 2, 45, 46
-    - Cable information from https://www.adafruit.com/product/954?gclid=EAIaIQobChMIlIWZzJvX1QIVlyOBCh3obgJjEAQYASABEgImJfD_BwE
+    - Cable information from https://www.adafruit.com/product/954
 
 
  ### Setup UART2 on BBBs
