@@ -5,8 +5,8 @@ Created on Aug 2, 2017
 '''
 # riaps:keep_import:begin
 from riaps.run.comp import Component
+from riaps.run.exc import PortError
 import os
-import threading
 # riaps:keep_import:end
 
 class TestUartComponentB(Component):
@@ -14,25 +14,25 @@ class TestUartComponentB(Component):
     def __init__(self):
         super().__init__()
         self.pid = os.getpid()
-        self.setValue = 0  # default off
         self.logger.info("TestUartComponent: %s - starting" % str(self.pid))
-        self.protectReq = threading.Event()
-        self.protectReq.set()
-        self.protectRead = threading.Event()
-        self.protectRead.set()
-        self.closeState = 0
 # riaps:keep_constr:end
 
 # riaps:keep_activity:begin
     def on_activity(self):
         msg = self.activity.recv_pyobj()
 
-        if self.protectReq.isSet():
-            self.protectReq.clear()
+        try:
             msg = ('read',10)
             self.uartReqPort.send_pyobj(msg)
             self.logger.info("on_activity()[%s]: requested to read: %s" %
                 (str(self.pid),repr(msg)))
+        except PortError as e:
+            if e.errno in (PortError.EAGAIN,PortError.EPROTO):
+                self.logger.info("on_activity()[%s]: resetting socket" % str(self.pid))
+                self.uartReqPort.reset()
+            else:
+                raise
+
 # riaps:keep_activity:end
 
 # riaps:keep_uartReqPort:begin
@@ -40,7 +40,6 @@ class TestUartComponentB(Component):
         msg = self.uartReqPort.recv_pyobj()
         self.logger.info("on_uartReqPort()[%s]: got reply : %s " %
                         (str(self.pid),repr(msg)))
-        self.protectReq.set()
 # riaps:keep_uartReqPort:end
 
 # riaps:keep_uartReadSub:begin

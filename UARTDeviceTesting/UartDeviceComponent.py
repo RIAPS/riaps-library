@@ -12,6 +12,7 @@ cape_enable=bone_capemgr.enable_partno=BB-UART2
 
 # riaps:keep_import:begin
 from riaps.run.comp import Component
+from riaps.run.exc import PortError
 import logging
 import os
 import threading
@@ -99,7 +100,7 @@ class UartDeviceThread(threading.Thread):
                             self.readUart()
 
                     elif msgType == UartDeviceComponent.Message.write:
-                        self.logger.info("UartDeviceThread - Writing on %s..."" %
+                        self.logger.info("UartDeviceThread - Writing on %s..." %
                             (self.component.uart_port_name))
                         returnVal = self.writeUart(msgVal)
                         self.plug.send_pyobj((msgType,returnVal))
@@ -143,7 +144,7 @@ class UartDeviceThread(threading.Thread):
     def readUart(self):
         if self.ser.is_open == True:
             self.readBuffer = self.readBuffer+self.ser.read(self.readSize)
-            self.logger.info("UartDeviceThread: Attempting to read..."")
+            self.logger.info("UartDeviceThread: Attempting to read...")
 
             # Limit buffer size to 16KB, more than the maximum number of bytes
             # one could expect to receive in 1s at 115200/8N1
