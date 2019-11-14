@@ -23,7 +23,8 @@ class TestUartComponentA(Component):
         msg = self.activity.recv_pyobj()
 
         try:
-            msg = ('write',str.encode(str(self.count)))
+            data = f"Data: {self.count%100:03} "
+            msg = ('write',data.encode(encoding='ascii'))
             self.uartReqPort.send_pyobj(msg)
             self.count = self.count + 1
 

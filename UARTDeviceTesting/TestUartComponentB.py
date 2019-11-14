@@ -22,7 +22,7 @@ class TestUartComponentB(Component):
         msg = self.activity.recv_pyobj()
 
         try:
-            msg = ('read',10)
+            msg = ('read',50)
             self.uartReqPort.send_pyobj(msg)
             self.logger.info("on_activity()[%s]: requested to read: %s" %
                 (str(self.pid),repr(msg)))
@@ -46,7 +46,7 @@ class TestUartComponentB(Component):
     def on_uartReadSub(self):
         msg = self.uartReadSub.recv_pyobj()
         self.logger.info("on_uartReadSub()[%s]: got bytes : %s " %
-                        (str(self.pid),repr(msg)))
+                        (str(self.pid),msg[1].decode(encoding='ascii')))
 # riaps:keep_uartReadSub:end
 
 # riaps:keep_impl:begin
