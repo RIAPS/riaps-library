@@ -108,7 +108,7 @@ Then go to [Flasher - eMMC: All BeagleBone Varients with eMMC section of the Ubu
 
 ## Tools used for Debugging Modbus Interface  
 * BBB is master, so to debug this interface a slave simulator was used: MODBUS RTU RS-232 PLC
-  - Simulator found at www.plcsimulator.org
+  - Simulator was found at www.plcsimulator.org (note: this may no longer be available)
 * DSP is slave, so to debug this interface a master simulator was used: QModMaster 0.4.7
   - libmodbus 3.1.4 found at https://sourceforge.net/projects/qmodmaster
 * Modbus Message Parser
