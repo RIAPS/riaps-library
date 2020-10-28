@@ -11,14 +11,15 @@ namespace riapsmodbuscreqrepuart {
     namespace components {
         class Logger : public LoggerBase {
         public:
-            Logger(const py::object*  parent_actor     ,
+            Logger(const py::object*  parent_actor            ,
                           const py::dict     actor_spec       ,
                           const py::dict     type_spec        ,
                           const std::string& name             ,
                           const std::string& type_name        ,
                           const py::dict     args             ,
                           const std::string& application_name ,
-                          const std::string& actor_name       );
+                          const std::string& actor_name       ,
+                          const py::list groups               );
 
 
             virtual void OnRx_modbusdata() override;
@@ -40,6 +41,7 @@ create_component_py(const py::object *parent_actor,
                     const std::string &type_name,
                     const py::dict args,
                     const std::string &application_name,
-const std::string &actor_name);
+                    const std::string &actor_name,
+                    const py::list groups);
 
 #endif // LOGGER_H

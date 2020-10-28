@@ -27,7 +27,8 @@ namespace riapsmodbuscreqrepuart {
                           const std::string& type_name        ,
                           const py::dict     args             ,
                           const std::string& application_name ,
-                          const std::string& actor_name       );
+                          const std::string& actor_name       ,
+                          const py::list groups);
 
             virtual void OnModbusreqport()=0;
             virtual void OnClock()=0;

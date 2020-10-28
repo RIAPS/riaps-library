@@ -10,15 +10,16 @@ namespace riapsmodbuscreqrepuart {
     namespace components {
 
         // riaps:keep_construct:begin
-        Logger::Logger(const py::object*  parent_actor     ,
+        Logger::Logger(const py::object*  parent_actor    ,
                       const py::dict     actor_spec       ,
                       const py::dict     type_spec        ,
                       const std::string& name             ,
                       const std::string& type_name        ,
                       const py::dict     args             ,
                       const std::string& application_name ,
-                      const std::string& actor_name       )
-            : LoggerBase(parent_actor, actor_spec, type_spec, name, type_name, args, application_name, actor_name) {
+                      const std::string& actor_name       ,
+                      const py::list groups)
+            : LoggerBase(parent_actor, actor_spec, type_spec, name, type_name, args, application_name, actor_name, groups) {
 
         }
         // riaps:keep_construct:end
@@ -56,16 +57,18 @@ create_component_py(const py::object *parent_actor,
                     const std::string &type_name,
                     const py::dict args,
                     const std::string &application_name,
-                    const std::string &actor_name) {
+                    const std::string &actor_name,
+                    const py::list groups) {
     auto ptr = new riapsmodbuscreqrepuart::components::Logger(parent_actor, actor_spec, type_spec, name, type_name, args,
                                                                      application_name,
-                                                                     actor_name);
+                                                                     actor_name,
+                                                                     groups);
     return std::move(std::unique_ptr<riapsmodbuscreqrepuart::components::Logger>(ptr));
 }
 
 PYBIND11_MODULE(liblogger, m) {
     py::class_<riapsmodbuscreqrepuart::components::Logger> testClass(m, "Logger");
-    testClass.def(py::init<const py::object*, const py::dict, const py::dict, const std::string&, const std::string&, const py::dict, const std::string&, const std::string&>());
+    testClass.def(py::init<const py::object*, const py::dict, const py::dict, const std::string&, const std::string&, const py::dict, const std::string&, const std::string&, const py::list>());
 
     testClass.def("setup"                 , &riapsmodbuscreqrepuart::components::Logger::Setup);
     testClass.def("activate"              , &riapsmodbuscreqrepuart::components::Logger::Activate);
@@ -78,6 +81,7 @@ PYBIND11_MODULE(liblogger, m) {
     testClass.def("handleNICStateChange"  , &riapsmodbuscreqrepuart::components::Logger::HandleNICStateChange);
     testClass.def("handlePeerStateChange" , &riapsmodbuscreqrepuart::components::Logger::HandlePeerStateChange);
     testClass.def("handleReinstate"       , &riapsmodbuscreqrepuart::components::Logger::HandleReinstate);
+    testClass.def("handleActivate"        , &riapsmodbuscreqrepuart::components::Logger::HandleActivate);
 
     m.def("create_component_py", &create_component_py, "Instantiates the component from python configuration");
 }

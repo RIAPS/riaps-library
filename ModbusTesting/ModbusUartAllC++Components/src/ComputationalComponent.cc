@@ -17,8 +17,9 @@ namespace riapsmodbuscreqrepuart {
                       const std::string& type_name        ,
                       const py::dict     args             ,
                       const std::string& application_name ,
-                      const std::string& actor_name       )
-            : ComputationalComponentBase(parent_actor, actor_spec, type_spec, name, type_name, args, application_name, actor_name) {
+                      const std::string& actor_name       ,
+                      const py::list groups)
+            : ComputationalComponentBase(parent_actor, actor_spec, type_spec, name, type_name, args, application_name, actor_name, groups) {
             PID_ = getpid();
 
             debug_mode_ = false;
@@ -166,16 +167,18 @@ create_component_py(const py::object *parent_actor,
                     const std::string &type_name,
                     const py::dict args,
                     const std::string &application_name,
-                    const std::string &actor_name) {
+                    const std::string &actor_name,
+                    const py::list groups) {
     auto ptr = new riapsmodbuscreqrepuart::components::ComputationalComponent(parent_actor, actor_spec, type_spec, name, type_name, args,
                                                                      application_name,
-                                                                     actor_name);
+                                                                     actor_name,
+                                                                     groups);
     return std::move(std::unique_ptr<riapsmodbuscreqrepuart::components::ComputationalComponent>(ptr));
 }
 
 PYBIND11_MODULE(libcomputationalcomponent, m) {
     py::class_<riapsmodbuscreqrepuart::components::ComputationalComponent> testClass(m, "ComputationalComponent");
-    testClass.def(py::init<const py::object*, const py::dict, const py::dict, const std::string&, const std::string&, const py::dict, const std::string&, const std::string&>());
+    testClass.def(py::init<const py::object*, const py::dict, const py::dict, const std::string&, const std::string&, const py::dict, const std::string&, const std::string&, const py::list>());
 
     testClass.def("setup"                 , &riapsmodbuscreqrepuart::components::ComputationalComponent::Setup);
     testClass.def("activate"              , &riapsmodbuscreqrepuart::components::ComputationalComponent::Activate);
@@ -188,6 +191,7 @@ PYBIND11_MODULE(libcomputationalcomponent, m) {
     testClass.def("handleNICStateChange"  , &riapsmodbuscreqrepuart::components::ComputationalComponent::HandleNICStateChange);
     testClass.def("handlePeerStateChange" , &riapsmodbuscreqrepuart::components::ComputationalComponent::HandlePeerStateChange);
     testClass.def("handleReinstate"       , &riapsmodbuscreqrepuart::components::ComputationalComponent::HandleReinstate);
+    testClass.def("handleActivate"        , &riapsmodbuscreqrepuart::components::ComputationalComponent::HandleActivate);
 
     m.def("create_component_py", &create_component_py, "Instantiates the component from python configuration");
 }

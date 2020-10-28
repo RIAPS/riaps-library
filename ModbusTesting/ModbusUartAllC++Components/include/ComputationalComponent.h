@@ -18,7 +18,8 @@ namespace riapsmodbuscreqrepuart {
                           const std::string& type_name        ,
                           const py::dict     args             ,
                           const std::string& application_name ,
-                          const std::string& actor_name       );
+                          const std::string& actor_name       ,
+                          const py::list groups               );
 
 
             virtual void OnModbusreqport() override;
@@ -54,6 +55,7 @@ create_component_py(const py::object *parent_actor,
                     const std::string &type_name,
                     const py::dict args,
                     const std::string &application_name,
-const std::string &actor_name);
+                    const std::string &actor_name,
+                    const py::list groups);
 
 #endif // COMPUTATIONALCOMPONENT_H

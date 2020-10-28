@@ -10,15 +10,16 @@ namespace riapsmodbuscreqrepuart {
     namespace components {
 
         // riaps:keep_construct:begin
-        ModbusUART::ModbusUART(const py::object*  parent_actor     ,
+        ModbusUART::ModbusUART(const py::object*  parent_actor,
                       const py::dict     actor_spec       ,
                       const py::dict     type_spec        ,
                       const std::string& name             ,
                       const std::string& type_name        ,
                       const py::dict     args             ,
                       const std::string& application_name ,
-                      const std::string& actor_name       )
-            : ModbusUARTBase(parent_actor, actor_spec, type_spec, name, type_name, args, application_name, actor_name) {
+                      const std::string& actor_name       ,
+                      const py::list groups)
+            : ModbusUARTBase(parent_actor, actor_spec, type_spec, name, type_name, args, application_name, actor_name, groups) {
 
             PID_ = getpid();
             component_logger()->info("Start ModbusUART device: {}", PID_);
@@ -630,16 +631,18 @@ create_component_py(const py::object *parent_actor,
                     const std::string &type_name,
                     const py::dict args,
                     const std::string &application_name,
-                    const std::string &actor_name) {
+                    const std::string &actor_name,
+                    const py::list groups) {
     auto ptr = new riapsmodbuscreqrepuart::components::ModbusUART(parent_actor, actor_spec, type_spec, name, type_name, args,
                                                                      application_name,
-                                                                     actor_name);
+                                                                     actor_name,
+                                                                     groups);
     return std::move(std::unique_ptr<riapsmodbuscreqrepuart::components::ModbusUART>(ptr));
 }
 
 PYBIND11_MODULE(libmodbusuart, m) {
     py::class_<riapsmodbuscreqrepuart::components::ModbusUART> testClass(m, "ModbusUART");
-    testClass.def(py::init<const py::object*, const py::dict, const py::dict, const std::string&, const std::string&, const py::dict, const std::string&, const std::string&>());
+    testClass.def(py::init<const py::object*, const py::dict, const py::dict, const std::string&, const std::string&, const py::dict, const std::string&, const std::string&, const py::list>());
 
     testClass.def("setup"                 , &riapsmodbuscreqrepuart::components::ModbusUART::Setup);
     testClass.def("activate"              , &riapsmodbuscreqrepuart::components::ModbusUART::Activate);
@@ -652,6 +655,7 @@ PYBIND11_MODULE(libmodbusuart, m) {
     testClass.def("handleNICStateChange"  , &riapsmodbuscreqrepuart::components::ModbusUART::HandleNICStateChange);
     testClass.def("handlePeerStateChange" , &riapsmodbuscreqrepuart::components::ModbusUART::HandlePeerStateChange);
     testClass.def("handleReinstate"       , &riapsmodbuscreqrepuart::components::ModbusUART::HandleReinstate);
+    testClass.def("handleActivate"        , &riapsmodbuscreqrepuart::components::ModbusUART::HandleActivate);
 
     m.def("create_component_py", &create_component_py, "Instantiates the component from python configuration");
 }
